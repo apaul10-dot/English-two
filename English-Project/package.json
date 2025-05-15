@@ -1,0 +1,23 @@
+{
+  "name": "ml-model-interface",
+  "version": "1.0.0",
+  "description": "A simple interface for ML models",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bcryptjs": "^2.4.3",
+    "chart.js": "^4.4.1",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^5.1.0",
+    "ejs": "^3.1.9",
+    "express": "^4.21.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^8.1.0",
+    "ngrok": "^5.0.0-beta.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  }
+}

@@ -1,0 +1,210 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <div class="model-content">
+        <h1>ML Model: Food Waste Prediction</h1>
+        <p class="model-description">Use our machine learning model to predict household food waste based on various factors.</p>
+        <form method="POST" action="/model2">
+            <label>Household Size:
+                <input type="number" name="household_size" min="1" max="10" required placeholder="e.g., 4">
+            </label>
+            <label>Monthly Income ($):
+                <input type="number" name="income" min="0" step="100" required placeholder="e.g., 5000">
+            </label>
+            <label>Meals Per Day:
+                <input type="number" name="meals_per_day" min="1" max="10" required placeholder="e.g., 3">
+            </label>
+            <label>Monthly Food Expenditure ($):
+                <input type="number" name="food_expenditure" min="0" step="10" required placeholder="e.g., 800">
+            </label>
+            <button type="submit">Predict Food Waste</button>
+        </form>
+        <% if (typeof prediction !== 'undefined') { %>
+            <div class="prediction-container">
+                <div class="prediction-header">Prediction Results</div>
+                <div class="prediction-value">
+                    Estimated Monthly Food Waste: <span class="highlight"><%= Math.round(prediction.waste_kg) %> kg</span>
+                </div>
+                <div class="prediction-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Confidence Level:</span>
+                        <span class="detail-value"><%= Math.round(prediction.confidence * 100) %>%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Waste Category:</span>
+                        <span class="detail-value <%= prediction.category.toLowerCase() %>"><%= prediction.category %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Key Factors:</span>
+                        <ul class="factors-list">
+                            <% prediction.factors.forEach(factor => { %>
+                                <li><%= factor %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        <a href="/" class="back-button">Back to Home</a>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Montserrat', Arial, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #e0f7fa 0%, #e3f2fd 100%);
+    }
+    .container {
+        max-width: 800px;
+        margin: 80px auto 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
+    }
+    h1 {
+        color: #1a73e8;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+    label {
+        font-size: 1.1rem;
+        color: #1565c0;
+        text-align: left;
+    }
+    input[type="number"] {
+        width: 100%;
+        padding: 0.7rem;
+        border: 1px solid #b3c6e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-top: 0.3rem;
+        background: #f7fbff;
+        transition: border 0.2s;
+    }
+    input[type="number"]:focus {
+        border: 1.5px solid #1a73e8;
+        outline: none;
+    }
+    button[type="submit"] {
+        margin-top: 1rem;
+        padding: 0.9rem 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.10);
+        transition: background 0.2s, transform 0.2s;
+    }
+    button[type="submit"]:hover {
+        background: linear-gradient(90deg, #1565c0 0%, #2e7d32 100%);
+        transform: translateY(-2px) scale(1.03);
+    }
+    .prediction-container {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 1px solid #e3e8f0;
+    }
+    .prediction-header {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c5282;
+        margin-bottom: 1rem;
+    }
+    .prediction-value {
+        font-size: 1.4rem;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+    }
+    .highlight {
+        color: #2b6cb0;
+        font-weight: 700;
+    }
+    .prediction-details {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    .detail-item {
+        margin-bottom: 1rem;
+    }
+    .detail-label {
+        font-weight: 600;
+        color: #4a5568;
+    }
+    .detail-value {
+        margin-left: 0.5rem;
+        color: #2d3748;
+    }
+    .factors-list {
+        margin: 0.5rem 0 0 1.5rem;
+        color: #4a5568;
+    }
+    .factors-list li {
+        margin-bottom: 0.3rem;
+    }
+    .low {
+        color: #38a169;
+    }
+    .medium {
+        color: #d69e2e;
+    }
+    .high {
+        color: #e53e3e;
+    }
+    input[type="number"]::placeholder {
+        color: #a0aec0;
+    }
+    .back-button {
+        padding: 0.5rem 1.2rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #1a73e8;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1.5rem;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.08);
+        transition: background 0.2s;
+    }
+    .back-button:hover {
+        background: #1565c0;
+    }
+    @media (max-width: 600px) {
+        .container {
+            padding: 1.2rem 0.5rem;
+            margin: 70px 8px 20px;
+        }
+        h1 {
+            font-size: 1.8rem;
+        }
+        form {
+            gap: 1rem;
+        }
+        label {
+            font-size: 1rem;
+        }
+    }
+    .model-description {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.5;
+    }
+</style> 

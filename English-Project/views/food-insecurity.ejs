@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <a href="/" class="back-button">← Back to Home</a>
+    <h1>Understanding Food Insecurity</h1>
+    
+    <div class="section">
+        <h2>What is Food Insecurity?</h2>
+        <p>Food insecurity is the lack of consistent access to enough food for an active, healthy life. It can affect anyone, regardless of their background or circumstances.</p>
+    </div>
+
+    <div class="section">
+        <h2>Key Facts</h2>
+        <ul>
+            <li>Millions of people worldwide face food insecurity daily</li>
+            <li>Food insecurity can lead to serious health problems</li>
+            <li>Children are particularly vulnerable to the effects of food insecurity</li>
+            <li>Food insecurity can affect mental and physical development</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>How You Can Help</h2>
+        <ul>
+            <li>Donate to local food banks</li>
+            <li>Volunteer at community food programs</li>
+            <li>Support organizations fighting food insecurity</li>
+            <li>Raise awareness about the issue</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Montserrat', Arial, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #e0f7fa 0%, #e3f2fd 100%);
+    }
+    .container {
+        max-width: 800px;
+        margin: 80px auto 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
+    }
+    h1 {
+        color: #1a73e8;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    .section {
+        margin-bottom: 2rem;
+    }
+    .section h2 {
+        color: #1565c0;
+        font-size: 1.2rem;
+        margin-bottom: 0.7rem;
+    }
+    .section p, .section ul {
+        color: #333;
+        font-size: 1.08rem;
+        line-height: 1.6;
+    }
+    .section ul {
+        padding-left: 1.2rem;
+    }
+    .back-button {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.08);
+        transition: background 0.2s;
+    }
+    .back-button:hover {
+        background: linear-gradient(90deg, #1565c0 0%, #2e7d32 100%);
+    }
+    @media (max-width: 900px) {
+        .container {
+            margin: 20px 8px 0 8px;
+            padding: 1.2rem 0.5rem;
+        }
+    }
+</style> 

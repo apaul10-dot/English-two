@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Hunger Stoppers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: #1a73e8;
+            padding: 0.8rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .navbar-brand:hover .navbar-logo {
+            transform: rotate(10deg) scale(1.1);
+        }
+        .navbar-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(45deg, #ffffff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+        .navbar-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+        .navbar-link:hover::after {
+            width: 100%;
+        }
+        .navbar-link.active {
+            color: #e3f2fd;
+            font-weight: 600;
+        }
+        .navbar-link.active::after {
+            width: 100%;
+            background: #e3f2fd;
+        }
+        .container {
+            margin-top: 80px;
+            padding: 20px;
+        }
+        @media (max-width: 1024px) {
+            .navbar {
+                padding: 0.8rem 1rem;
+            }
+            .navbar-links {
+                gap: 1rem;
+            }
+            .navbar-link {
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .navbar-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            .navbar-link {
+                font-size: 0.85rem;
+                padding: 0.3rem 0.5rem;
+            }
+            .container {
+                margin-top: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <img src="/images/logo.png" alt="Hunger Stoppers Logo" class="navbar-logo">
+            <h1 class="navbar-title">HUNGER STOPPERS</h1>
+        </a>
+        <div class="navbar-links">
+            <a href="/" class="navbar-link <%= active === 'home' ? 'active' : '' %>">Home</a>
+            <a href="/food-insecurity" class="navbar-link <%= active === 'food-insecurity' ? 'active' : '' %>">Learn</a>
+            <a href="/model2" class="navbar-link <%= active === 'model2' ? 'active' : '' %>">ML Model</a>
+            <a href="/resources" class="navbar-link <%= active === 'resources' ? 'active' : '' %>">Resources</a>
+            <a href="/kids-game" class="navbar-link <%= active === 'kids-game' ? 'active' : '' %>">Game</a>
+            <a href="/about" class="navbar-link <%= active === 'about' ? 'active' : '' %>">About</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Account </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/login">Login</a>
+                    <a class="dropdown-item" href="/register">Register</a>
+                </div>
+            </li>
+        </div>
+    </nav>
+</body>
+</html> 

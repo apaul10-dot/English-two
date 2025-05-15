@@ -1,0 +1,178 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <h1>Ottawa Food Resources</h1>
+    
+    <div class="resource-grid">
+        <a href="https://www.ottawafoodbank.ca/" target="_blank" class="resource-card">
+            <span class="icon">🏪</span>
+            <h3>Ottawa Food Bank</h3>
+            <p>Main food bank serving Ottawa residents</p>
+        </a>
+        
+        <a href="https://www.ottawafoodbank.ca/get-help/find-a-food-bank/" target="_blank" class="resource-card">
+            <span class="icon">🏠</span>
+            <h3>Local Food Banks</h3>
+            <p>Find food banks in your Ottawa neighborhood</p>
+        </a>
+        
+        <a href="https://www.211ontario.ca/search?q=food+assistance&location=Ottawa" target="_blank" class="resource-card">
+            <span class="icon">🆘</span>
+            <h3>Emergency Help</h3>
+            <p>Immediate food assistance in Ottawa</p>
+        </a>
+        
+        <a href="https://www.ottawafoodbank.ca/volunteer/" target="_blank" class="resource-card">
+            <span class="icon">🤝</span>
+            <h3>Volunteer</h3>
+            <p>Help at Ottawa Food Bank</p>
+        </a>
+        
+        <a href="https://justfood.ca/community-gardens/" target="_blank" class="resource-card">
+            <span class="icon">🌱</span>
+            <h3>Community Gardens</h3>
+            <p>Ottawa community garden locations</p>
+        </a>
+        
+        <a href="https://www.ottawapublichealth.ca/en/public-health-topics/healthy-eating.aspx" target="_blank" class="resource-card">
+            <span class="icon">🥗</span>
+            <h3>Nutrition Guide</h3>
+            <p>Ottawa Public Health resources</p>
+        </a>
+
+        <a href="https://www.ottawafoodbank.ca/get-help/community-food-programs/" target="_blank" class="resource-card">
+            <span class="icon">🍎</span>
+            <h3>Community Programs</h3>
+            <p>Food programs across Ottawa</p>
+        </a>
+
+        <a href="https://www.ottawafoodbank.ca/get-help/community-food-programs/community-meal-programs/" target="_blank" class="resource-card">
+            <span class="icon">🍽️</span>
+            <h3>Meal Programs</h3>
+            <p>Free meal services in Ottawa</p>
+        </a>
+    </div>
+
+    <div class="emergency-section">
+        <h2>Emergency Food Assistance in Ottawa</h2>
+        <div class="emergency-info">
+            <p>If you need immediate food assistance in Ottawa:</p>
+            <ul>
+                <li>Call 211 for 24/7 assistance and referrals</li>
+                <li>Visit your nearest Ottawa Food Bank location</li>
+                <li>Contact Ottawa Public Health for additional resources</li>
+                <li>Access community meal programs across the city</li>
+            </ul>
+            <p class="emergency-contact">Emergency Contact: <a href="tel:211">211</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1 {
+        color: #1a73e8;
+        margin-bottom: 2rem;
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-align: center;
+    }
+    .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 10px;
+        margin-bottom: 40px;
+    }
+    .resource-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(26, 115, 232, 0.15);
+    }
+    .resource-card .icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    .resource-card h3 {
+        color: #1a73e8;
+        margin: 0 0 10px 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    .resource-card p {
+        color: #555;
+        margin: 0;
+        line-height: 1.4;
+        font-size: 0.95rem;
+    }
+    .emergency-section {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 30px;
+        margin-top: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .emergency-section h2 {
+        color: #1a73e8;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    .emergency-info {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .emergency-info ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    .emergency-info li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        color: #555;
+    }
+    .emergency-info li:last-child {
+        border-bottom: none;
+    }
+    .emergency-contact {
+        text-align: center;
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+    .emergency-contact a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .emergency-contact a:hover {
+        text-decoration: underline;
+    }
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        .resource-grid {
+            grid-template-columns: 1fr;
+        }
+        .emergency-section {
+            padding: 20px;
+        }
+    }
+</style> 
