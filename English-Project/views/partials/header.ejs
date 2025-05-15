@@ -138,6 +138,14 @@
             <a href="/resources" class="navbar-link <%= active === 'resources' ? 'active' : '' %>">Resources</a>
             <a href="/kids-game" class="navbar-link <%= active === 'kids-game' ? 'active' : '' %>">Game</a>
             <a href="/about" class="navbar-link <%= active === 'about' ? 'active' : '' %>">About</a>
+            <% if (locals.user) { %>
+                <li class="nav-item">
+                    <a href="/learning" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        Learning Modules
+                    </a>
+                </li>
+            <% } %>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Account </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">

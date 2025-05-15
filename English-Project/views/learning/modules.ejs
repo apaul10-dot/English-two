@@ -1,0 +1,252 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/learning.css">
+
+<div class="modules-container">
+    <div class="modules-header">
+        <h1>Learning Modules</h1>
+        <p>Explore our educational content about food waste and sustainability</p>
+    </div>
+
+    <div class="modules-grid">
+        <% modules.forEach(module => { %>
+            <div class="module-card">
+                <div class="module-card-header">
+                    <h2><%= module.title %></h2>
+                    <div class="module-progress">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: <%= module.progress %>%"></div>
+                        </div>
+                        <span class="progress-text"><%= module.progress %>% Complete</span>
+                    </div>
+                </div>
+
+                <div class="module-stats">
+                    <div class="stat">
+                        <i class="fas fa-book-reader"></i>
+                        <span><%= module.lessons.length %> Lessons</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-clock"></i>
+                        <span><%= module.lessons.reduce((acc, lesson) => acc + lesson.duration, 0) %> Minutes</span>
+                    </div>
+                </div>
+
+                <div class="module-lessons-preview">
+                    <h3>What you'll learn:</h3>
+                    <ul>
+                        <% module.lessons.slice(0, 3).forEach(lesson => { %>
+                            <li>
+                                <i class="<%= lesson.completed ? 'fas fa-check-circle completed' : 'far fa-circle' %>"></i>
+                                <%= lesson.title %>
+                            </li>
+                        <% }); %>
+                        <% if (module.lessons.length > 3) { %>
+                            <li class="more-lessons">
+                                <i class="fas fa-ellipsis-h"></i>
+                                <%= module.lessons.length - 3 %> more lessons
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+
+                <div class="module-footer">
+                    <a href="/learning/module/<%= module.id %>" class="start-module-btn">
+                        <% if (module.progress === 0) { %>
+                            Start Learning
+                        <% } else if (module.progress === 100) { %>
+                            Review Module
+                        <% } else { %>
+                            Continue Learning
+                        <% } %>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <% if (modules.length === 0) { %>
+        <div class="no-modules">
+            <i class="fas fa-books"></i>
+            <h2>No modules available yet</h2>
+            <p>Check back soon for new educational content!</p>
+        </div>
+    <% } %>
+</div>
+
+<style>
+/* Additional styles specific to modules listing */
+.modules-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.modules-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.modules-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.modules-header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.module-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+}
+
+.module-card-header h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.module-progress {
+    margin-bottom: 1.5rem;
+}
+
+.progress-bar {
+    background: #f1f1f1;
+    border-radius: 10px;
+    height: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.progress {
+    background: #4CAF50;
+    border-radius: 10px;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.module-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+}
+
+.stat i {
+    color: #2196F3;
+}
+
+.module-lessons-preview {
+    margin-bottom: 1.5rem;
+}
+
+.module-lessons-preview h3 {
+    color: #2c3e50;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.module-lessons-preview ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.module-lessons-preview li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.module-lessons-preview i {
+    color: #6c757d;
+}
+
+.module-lessons-preview i.completed {
+    color: #4CAF50;
+}
+
+.more-lessons {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.module-footer {
+    margin-top: auto;
+}
+
+.start-module-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: #2196F3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.start-module-btn:hover {
+    background: #1976D2;
+}
+
+.no-modules {
+    text-align: center;
+    padding: 4rem 0;
+    color: #6c757d;
+}
+
+.no-modules i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .modules-container {
+        padding: 1rem;
+    }
+
+    .modules-header h1 {
+        font-size: 2rem;
+    }
+
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %> 

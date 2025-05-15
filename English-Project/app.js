@@ -12,6 +12,9 @@ const User = require('./models/User');
 const { isAuthenticated, isNotAuthenticated } = require('./middleware/auth');
 const flash = require('connect-flash');
 
+// Import routes
+const learningRoutes = require('./routes/learning');
+
 const app = express();
 const port = 2002;
 
@@ -309,6 +312,9 @@ app.post('/dashboard/goals', isAuthenticated, async (req, res) => {
         res.redirect('/dashboard');
     }
 });
+
+// Use routes
+app.use('/learning', learningRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

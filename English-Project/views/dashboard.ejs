@@ -1,357 +1,219 @@
 <%- include('partials/header') %>
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js">
 
-<div class="container">
-    <div class="dashboard-container">
-        <div class="welcome-section">
-            <h1>Welcome, <%= user.name %>!</h1>
-            <p class="subtitle">Track your food waste and make a difference</p>
+<div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <div class="dashboard-sidebar">
+        <div class="user-profile">
+            <div class="profile-image">
+                <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="Profile">
+            </div>
+            <h3><%= user.name %></h3>
+            <p class="user-level">Level <%= Math.floor(user.points / 100) + 1 %></p>
         </div>
+        <nav class="sidebar-nav">
+            <a href="#overview" class="nav-item active">
+                <i class="fas fa-home"></i> Overview
+            </a>
+            <a href="#progress" class="nav-item">
+                <i class="fas fa-chart-line"></i> Progress
+            </a>
+            <a href="#learning" class="nav-item">
+                <i class="fas fa-book"></i> Learning
+            </a>
+            <a href="#achievements" class="nav-item">
+                <i class="fas fa-trophy"></i> Achievements
+            </a>
+            <a href="#community" class="nav-item">
+                <i class="fas fa-users"></i> Community
+            </a>
+        </nav>
+    </div>
 
-        <div class="dashboard-grid">
-            <!-- Waste Tracking Section -->
-            <div class="dashboard-card">
-                <h2>Track Your Waste</h2>
-                <form action="/dashboard/waste" method="POST" class="waste-form">
-                    <div class="form-group">
-                        <label for="wasteAmount">Amount (kg)</label>
-                        <input type="number" id="wasteAmount" name="wasteAmount" step="0.1" required min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="category">Category</label>
-                        <select id="category" name="category" required>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea id="notes" name="notes" rows="3" placeholder="What factors contributed to this waste?"></textarea>
-                    </div>
-                    <button type="submit" class="submit-button">Add Entry</button>
-                </form>
-            </div>
-
-            <!-- Statistics Section -->
-            <div class="dashboard-card">
-                <h2>Your Statistics</h2>
-                <% const stats = user.getWasteStats() %>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <h3>Total Waste</h3>
-                        <p class="stat-value"><%= stats.totalWaste.toFixed(1) %> kg</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>Average Waste</h3>
-                        <p class="stat-value"><%= stats.averageWaste.toFixed(1) %> kg</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>Entries</h3>
-                        <p class="stat-value"><%= stats.entryCount %></p>
-                    </div>
+    <!-- Main Content Area -->
+    <div class="dashboard-main">
+        <!-- Overview Section -->
+        <section id="overview" class="dashboard-section">
+            <h2>Your Food Waste Impact</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Waste Reduced</h3>
+                    <p class="stat-value"><%= (user.totalWasteReduced || 0).toFixed(1) %> kg</p>
+                    <p class="stat-change positive">↑ 12% from last month</p>
                 </div>
-                <div class="category-stats">
-                    <h3>Waste Categories</h3>
-                    <div class="category-bars">
-                        <% Object.entries(stats.categoryCounts).forEach(([category, count]) => { %>
-                            <div class="category-bar">
-                                <span class="category-label"><%= category %></span>
-                                <div class="bar-container">
-                                    <div class="bar" style="width: <%= (count / stats.entryCount * 100) || 0 %>%"></div>
-                                </div>
-                                <span class="category-count"><%= count %></span>
-                            </div>
-                        <% }); %>
-                    </div>
+                <div class="stat-card">
+                    <h3>CO₂ Emissions Saved</h3>
+                    <p class="stat-value"><%= ((user.totalWasteReduced || 0) * 2.5).toFixed(1) %> kg</p>
+                    <p class="stat-change positive">Equivalent to <%= Math.floor((user.totalWasteReduced || 0) * 2.5 / 4) %> trees</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Money Saved</h3>
+                    <p class="stat-value">$<%= ((user.totalWasteReduced || 0) * 5).toFixed(2) %></p>
+                    <p class="stat-change neutral">Based on average food prices</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Current Streak</h3>
+                    <p class="stat-value"><%= user.currentStreak || 0 %> days</p>
+                    <p class="stat-change">Best: <%= user.bestStreak || 0 %> days</p>
                 </div>
             </div>
 
-            <!-- Goals Section -->
-            <div class="dashboard-card">
-                <h2>Set a Goal</h2>
-                <form action="/dashboard/goals" method="POST" class="goals-form">
-                    <div class="form-group">
-                        <label for="targetAmount">Target Amount (kg)</label>
-                        <input type="number" id="targetAmount" name="targetAmount" required min="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="startDate">Start Date</label>
-                        <input type="date" id="startDate" name="startDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="endDate">End Date</label>
-                        <input type="date" id="endDate" name="endDate" required>
-                    </div>
-                    <button type="submit" class="submit-button">Create Goal</button>
-                </form>
+            <!-- Progress Chart -->
+            <div class="chart-container">
+                <canvas id="wasteChart"></canvas>
             </div>
+        </section>
 
-            <!-- Active Goals -->
-            <div class="dashboard-card">
-                <h2>Active Goals</h2>
-                <div class="goals-list">
-                    <% user.goals.filter(goal => goal.status === 'Active').forEach(goal => { %>
-                        <div class="goal-item">
-                            <div class="goal-header">
-                                <h3><%= goal.targetAmount %> kg</h3>
-                                <span class="goal-dates">
-                                    <%= new Date(goal.startDate).toLocaleDateString() %> - 
-                                    <%= new Date(goal.endDate).toLocaleDateString() %>
-                                </span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: <%= (goal.progress / goal.targetAmount * 100) %>%"></div>
-                            </div>
-                            <p class="progress-text"><%= goal.progress %> / <%= goal.targetAmount %> kg</p>
+        <!-- Learning Progress Section -->
+        <section id="learning" class="dashboard-section">
+            <h2>Learning Journey</h2>
+            <div class="learning-modules">
+                <div class="module-card completed">
+                    <div class="module-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="module-content">
+                        <h3>Food Waste Basics</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 100%"></div>
                         </div>
-                    <% }); %>
-                    <% if (user.goals.filter(goal => goal.status === 'Active').length === 0) { %>
-                        <p class="no-goals">No active goals. Set one to start tracking your progress!</p>
-                    <% } %>
+                        <span class="completion">Completed</span>
+                    </div>
+                </div>
+                <div class="module-card in-progress">
+                    <div class="module-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="module-content">
+                        <h3>Smart Storage Solutions</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 60%"></div>
+                        </div>
+                        <span class="completion">60% Complete</span>
+                    </div>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <div class="module-content">
+                        <h3>Composting 101</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 0%"></div>
+                        </div>
+                        <span class="completion">Not Started</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Achievements Section -->
+        <section id="achievements" class="dashboard-section">
+            <h2>Your Achievements</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card earned">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>First Steps</h3>
+                    <p>Track waste for 7 consecutive days</p>
+                </div>
+                <div class="achievement-card earned">
+                    <div class="achievement-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3>Waste Warrior</h3>
+                    <p>Reduce waste by 50% in a month</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Master Reducer</h3>
+                    <p>Maintain low waste for 3 months</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Section -->
+        <section id="community" class="dashboard-section">
+            <h2>Community Impact</h2>
+            <div class="community-stats">
+                <div class="community-card">
+                    <h3>Global Ranking</h3>
+                    <p class="rank">#<%= user.globalRank || 'N/A' %></p>
+                    <p>Out of <%= totalUsers || 0 %> users</p>
+                </div>
+                <div class="community-card">
+                    <h3>Local Impact</h3>
+                    <p class="impact"><%= user.localImpact || 0 %>kg</p>
+                    <p>Waste reduced in your area</p>
+                </div>
+                <div class="community-card">
+                    <h3>Challenges Won</h3>
+                    <p class="challenges"><%= user.challengesWon || 0 %></p>
+                    <p>Community challenges completed</p>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
 
-<style>
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 100px auto 50px;
-        padding: 0 20px;
-    }
-
-    .welcome-section {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .welcome-section h1 {
-        color: #1a73e8;
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-    }
-
-    .subtitle {
-        color: #4a5568;
-        font-size: 1.2rem;
-    }
-
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-    }
-
-    .dashboard-card {
-        background: white;
-        border-radius: 16px;
-        padding: 25px;
-        box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
-    }
-
-    .dashboard-card h2 {
-        color: #1a73e8;
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e2e8f0;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        color: #4a5568;
-        margin-bottom: 8px;
-        font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.2s;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #1a73e8;
-        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-    }
-
-    .submit-button {
-        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        width: 100%;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .submit-button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .stat-item {
-        text-align: center;
-    }
-
-    .stat-item h3 {
-        color: #4a5568;
-        font-size: 1rem;
-        margin-bottom: 8px;
-    }
-
-    .stat-value {
-        color: #1a73e8;
-        font-size: 1.8rem;
-        font-weight: 600;
-    }
-
-    .category-stats {
-        margin-top: 30px;
-    }
-
-    .category-stats h3 {
-        color: #4a5568;
-        font-size: 1.1rem;
-        margin-bottom: 15px;
-    }
-
-    .category-bars {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .category-bar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .category-label {
-        width: 80px;
-        color: #4a5568;
-        font-weight: 500;
-    }
-
-    .bar-container {
-        flex-grow: 1;
-        height: 8px;
-        background: #e2e8f0;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .bar {
-        height: 100%;
-        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
-        border-radius: 4px;
-        transition: width 0.3s ease;
-    }
-
-    .category-count {
-        width: 40px;
-        text-align: right;
-        color: #718096;
-        font-size: 0.9rem;
-    }
-
-    .goals-list {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .goal-item {
-        background: #f7fafc;
-        padding: 15px;
-        border-radius: 8px;
-    }
-
-    .goal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .goal-header h3 {
-        color: #1a73e8;
-        font-size: 1.2rem;
-        margin: 0;
-    }
-
-    .goal-dates {
-        color: #718096;
-        font-size: 0.9rem;
-    }
-
-    .progress-bar {
-        height: 8px;
-        background: #e2e8f0;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 8px;
-    }
-
-    .progress {
-        height: 100%;
-        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
-        border-radius: 4px;
-        transition: width 0.3s ease;
-    }
-
-    .progress-text {
-        color: #4a5568;
-        font-size: 0.9rem;
-        text-align: right;
-        margin: 0;
-    }
-
-    .no-goals {
-        color: #718096;
-        text-align: center;
-        font-style: italic;
-    }
-
-    @media (max-width: 768px) {
-        .dashboard-container {
-            margin-top: 80px;
+<script>
+// Initialize charts when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Waste Tracking Chart
+    const ctx = document.getElementById('wasteChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Food Waste (kg)',
+                data: [5.2, 4.1, 3.5, 2.8],
+                borderColor: '#1a73e8',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Waste Tracking'
+                }
+            }
         }
+    });
 
-        .welcome-section h1 {
-            font-size: 2rem;
-        }
+    // Handle sidebar navigation
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.dashboard-section');
 
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = item.getAttribute('href').substring(1);
+            
+            // Update active nav item
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
 
-        .stats-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-</style> 
+            // Show target section
+            sections.forEach(section => {
+                if (section.id === targetId) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+
+<%- include('partials/footer') %> 

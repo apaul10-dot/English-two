@@ -1,0 +1,220 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/learning.css">
+
+<div class="learning-container">
+    <div class="module-header">
+        <h1><%= module.title %></h1>
+        <div class="progress-indicator">
+            <div class="progress" style="width: <%= module.progress %>%"></div>
+            <span><%= module.progress %>% Complete</span>
+        </div>
+    </div>
+
+    <div class="module-content">
+        <div class="lesson-navigation">
+            <% module.lessons.forEach((lesson, index) => { %>
+                <div class="lesson-item <%= lesson.completed ? 'completed' : '' %> <%= lesson.current ? 'current' : '' %>">
+                    <div class="lesson-number"><%= index + 1 %></div>
+                    <div class="lesson-info">
+                        <h3><%= lesson.title %></h3>
+                        <p><%= lesson.duration %> min</p>
+                    </div>
+                    <div class="lesson-status">
+                        <% if (lesson.completed) { %>
+                            <i class="fas fa-check-circle"></i>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <div class="lesson-content">
+            <div class="lesson-header">
+                <h2><%= currentLesson.title %></h2>
+                <p class="lesson-duration"><i class="far fa-clock"></i> <%= currentLesson.duration %> minutes</p>
+            </div>
+
+            <div class="content-sections">
+                <!-- Text Content -->
+                <div class="content-section">
+                    <p><%= currentLesson.content %></p>
+                </div>
+
+                <!-- Interactive Elements -->
+                <div class="interactive-section">
+                    <% if (currentLesson.type === 'video') { %>
+                        <div class="video-container">
+                            <iframe src="<%= currentLesson.videoUrl %>" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    <% } else if (currentLesson.type === 'quiz') { %>
+                        <div class="quiz-container">
+                            <h3>Knowledge Check</h3>
+                            <form id="quiz-form">
+                                <% currentLesson.questions.forEach((question, index) => { %>
+                                    <div class="question">
+                                        <p><%= question.text %></p>
+                                        <div class="options">
+                                            <% question.options.forEach((option, optionIndex) => { %>
+                                                <label class="option">
+                                                    <input type="radio" name="q<%= index %>" value="<%= optionIndex %>">
+                                                    <span><%= option %></span>
+                                                </label>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                                <button type="submit" class="submit-quiz">Check Answers</button>
+                            </form>
+                        </div>
+                    <% } else if (currentLesson.type === 'interactive') { %>
+                        <div class="interactive-exercise">
+                            <div class="exercise-container">
+                                <!-- Drag and Drop Exercise -->
+                                <div class="drag-drop-container">
+                                    <div class="items-container">
+                                        <% currentLesson.items.forEach(item => { %>
+                                            <div class="draggable-item" draggable="true" data-category="<%= item.category %>">
+                                                <%= item.name %>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                    <div class="categories-container">
+                                        <% currentLesson.categories.forEach(category => { %>
+                                            <div class="category-box" data-category="<%= category.id %>">
+                                                <h4><%= category.name %></h4>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Tips and Resources -->
+                <div class="tips-section">
+                    <h3>Pro Tips</h3>
+                    <ul class="tips-list">
+                        <% currentLesson.tips.forEach(tip => { %>
+                            <li><i class="fas fa-lightbulb"></i> <%= tip %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+
+                <!-- Additional Resources -->
+                <div class="resources-section">
+                    <h3>Additional Resources</h3>
+                    <div class="resources-grid">
+                        <% currentLesson.resources.forEach(resource => { %>
+                            <a href="<%= resource.url %>" class="resource-card" target="_blank">
+                                <i class="<%= resource.icon %>"></i>
+                                <h4><%= resource.title %></h4>
+                                <p><%= resource.description %></p>
+                            </a>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="lesson-navigation-buttons">
+                <% if (currentLesson.previousLesson) { %>
+                    <a href="/learning/module/<%= module.id %>/lesson/<%= currentLesson.previousLesson %>" class="nav-button previous">
+                        <i class="fas fa-arrow-left"></i> Previous Lesson
+                    </a>
+                <% } %>
+                <% if (!currentLesson.completed) { %>
+                    <button id="complete-lesson" class="nav-button complete">
+                        Mark as Complete
+                    </button>
+                <% } %>
+                <% if (currentLesson.nextLesson) { %>
+                    <a href="/learning/module/<%= module.id %>/lesson/<%= currentLesson.nextLesson %>" class="nav-button next">
+                        Next Lesson <i class="fas fa-arrow-right"></i>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quiz handling
+    const quizForm = document.getElementById('quiz-form');
+    if (quizForm) {
+        quizForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Add quiz submission logic here
+        });
+    }
+
+    // Drag and Drop functionality
+    const draggableItems = document.querySelectorAll('.draggable-item');
+    const categoryBoxes = document.querySelectorAll('.category-box');
+
+    draggableItems.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.category);
+            this.classList.add('dragging');
+        });
+
+        item.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+        });
+    });
+
+    categoryBoxes.forEach(box => {
+        box.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+
+        box.addEventListener('dragleave', function() {
+            this.classList.remove('drag-over');
+        });
+
+        box.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const itemCategory = e.dataTransfer.getData('text/plain');
+            const boxCategory = this.dataset.category;
+
+            if (itemCategory === boxCategory) {
+                // Correct match
+                this.classList.add('correct');
+            } else {
+                // Incorrect match
+                this.classList.add('incorrect');
+                setTimeout(() => this.classList.remove('incorrect'), 1000);
+            }
+            this.classList.remove('drag-over');
+        });
+    });
+
+    // Complete lesson button
+    const completeButton = document.getElementById('complete-lesson');
+    if (completeButton) {
+        completeButton.addEventListener('click', function() {
+            // Add completion logic here
+            fetch('/api/learning/complete-lesson', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    moduleId: '<%= module.id %>',
+                    lessonId: '<%= currentLesson.id %>'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                }
+            });
+        });
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 
