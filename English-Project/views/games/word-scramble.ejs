@@ -1,0 +1,199 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/games.css">
+
+<div class="game-container">
+    <h1>Food Word Scramble</h1>
+    <div class="game-area">
+        <div class="word-display">
+            <p class="scrambled-word"></p>
+            <p class="hint"></p>
+        </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your answer here...">
+            <button id="submit-btn">Submit</button>
+            <button id="next-btn" style="display: none;">Next Word</button>
+        </div>
+        <div class="score-area">
+            <p>Score: <span id="score">0</span></p>
+            <p>Time: <span id="timer">60</span>s</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.game-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.game-area {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
+}
+
+.word-display {
+    margin: 20px 0;
+}
+
+.scrambled-word {
+    font-size: 2.5rem;
+    color: #1a73e8;
+    margin-bottom: 10px;
+    letter-spacing: 5px;
+}
+
+.hint {
+    color: #4a5568;
+    font-style: italic;
+}
+
+.input-area {
+    margin: 30px 0;
+}
+
+#user-input {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    margin-right: 10px;
+    width: 250px;
+}
+
+#user-input:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    background: #1a73e8;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #1557b0;
+}
+
+#next-btn {
+    background: #34a853;
+}
+
+#next-btn:hover {
+    background: #2d8a46;
+}
+
+.score-area {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.score-area p {
+    font-size: 1.2rem;
+    color: #4a5568;
+}
+
+.score-area span {
+    font-weight: bold;
+    color: #1a73e8;
+}
+</style>
+
+<script>
+const words = [
+    { word: 'COMPOST', hint: 'Natural recycling of organic waste' },
+    { word: 'LEFTOVERS', hint: 'Remaining food from a meal' },
+    { word: 'PRESERVE', hint: 'Keep food fresh for longer' },
+    { word: 'STORAGE', hint: 'Place to keep food' },
+    { word: 'RECYCLE', hint: 'Process of converting waste into new materials' },
+    { word: 'ORGANIC', hint: 'Produced without artificial chemicals' },
+    { word: 'HARVEST', hint: 'Gathering crops when ready' },
+    { word: 'SUSTAINABLE', hint: 'Environmentally friendly practices' },
+    { word: 'BIODEGRADABLE', hint: 'Can decompose naturally' },
+    { word: 'WASTAGE', hint: 'Unnecessary loss of food' }
+];
+
+let currentWord = '';
+let currentHint = '';
+let score = 0;
+let timeLeft = 60;
+let gameInterval;
+
+function scrambleWord(word) {
+    const arr = word.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.join('');
+}
+
+function getNewWord() {
+    const wordObj = words[Math.floor(Math.random() * words.length)];
+    currentWord = wordObj.word;
+    currentHint = wordObj.hint;
+    document.querySelector('.scrambled-word').textContent = scrambleWord(currentWord);
+    document.querySelector('.hint').textContent = `Hint: ${currentHint}`;
+    document.getElementById('user-input').value = '';
+    document.getElementById('submit-btn').style.display = 'inline-block';
+    document.getElementById('next-btn').style.display = 'none';
+}
+
+function startTimer() {
+    gameInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = timeLeft;
+        if (timeLeft <= 0) {
+            endGame();
+        }
+    }, 1000);
+}
+
+function endGame() {
+    clearInterval(gameInterval);
+    document.getElementById('user-input').disabled = true;
+    document.getElementById('submit-btn').disabled = true;
+    alert(`Game Over! Your final score is ${score}`);
+}
+
+document.getElementById('submit-btn').addEventListener('click', () => {
+    const userInput = document.getElementById('user-input').value.toUpperCase();
+    if (userInput === currentWord) {
+        score += 10;
+        document.getElementById('score').textContent = score;
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'inline-block';
+        document.getElementById('user-input').disabled = true;
+    } else {
+        alert('Try again!');
+    }
+});
+
+document.getElementById('next-btn').addEventListener('click', () => {
+    document.getElementById('user-input').disabled = false;
+    getNewWord();
+});
+
+document.getElementById('user-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('submit-btn').click();
+    }
+});
+
+// Start the game
+getNewWord();
+startTimer();
+</script>
+
+<%- include('../partials/footer') %> 

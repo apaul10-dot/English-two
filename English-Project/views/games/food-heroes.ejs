@@ -1,0 +1,268 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/games.css">
+
+<div class="game-container">
+    <h1>Food Waste Heroes</h1>
+    <div class="game-stats">
+        <p>Score: <span id="score">0</span></p>
+        <p>Lives: <span id="lives">3</span></p>
+        <p>Level: <span id="level">1</span></p>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="game-over" style="display: none;">
+        <h2>Game Over!</h2>
+        <p>Final Score: <span id="final-score">0</span></p>
+        <button id="restart-btn">Play Again</button>
+    </div>
+    <div class="game-instructions">
+        <p>Use left and right arrow keys or A/D keys to move the basket</p>
+        <p>Catch the falling food items to prevent waste!</p>
+    </div>
+</div>
+
+<style>
+.game-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+
+.game-stats span {
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+#gameCanvas {
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+#game-over h2 {
+    color: #1a73e8;
+    margin-bottom: 20px;
+}
+
+#restart-btn {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    background: #1a73e8;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-top: 20px;
+}
+
+#restart-btn:hover {
+    background: #1557b0;
+}
+
+.game-instructions {
+    margin-top: 20px;
+    color: #4a5568;
+    font-style: italic;
+}
+</style>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Set canvas size
+canvas.width = 600;
+canvas.height = 400;
+
+// Game variables
+let score = 0;
+let lives = 3;
+let level = 1;
+let gameLoop;
+let gameStarted = false;
+
+// Player (basket) properties
+const basket = {
+    width: 80,
+    height: 60,
+    x: canvas.width / 2 - 40,
+    y: canvas.height - 70,
+    speed: 5,
+    moving: {
+        left: false,
+        right: false
+    }
+};
+
+// Food items array
+let foods = [];
+const foodTypes = [
+    { name: 'apple', color: '#e74c3c', points: 10 },
+    { name: 'banana', color: '#f1c40f', points: 15 },
+    { name: 'carrot', color: '#e67e22', points: 20 },
+    { name: 'broccoli', color: '#27ae60', points: 25 }
+];
+
+// Create food item
+function createFood() {
+    const type = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+    return {
+        x: Math.random() * (canvas.width - 20),
+        y: 0,
+        width: 20,
+        height: 20,
+        speed: 2 + level * 0.5,
+        type: type
+    };
+}
+
+// Draw basket
+function drawBasket() {
+    ctx.fillStyle = '#34495e';
+    ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+}
+
+// Draw food items
+function drawFoods() {
+    foods.forEach(food => {
+        ctx.fillStyle = food.type.color;
+        ctx.fillRect(food.x, food.y, food.width, food.height);
+    });
+}
+
+// Update game state
+function update() {
+    // Move basket
+    if (basket.moving.left && basket.x > 0) {
+        basket.x -= basket.speed;
+    }
+    if (basket.moving.right && basket.x < canvas.width - basket.width) {
+        basket.x += basket.speed;
+    }
+
+    // Update foods
+    foods.forEach((food, index) => {
+        food.y += food.speed;
+
+        // Check for collision with basket
+        if (food.y + food.height > basket.y &&
+            food.x + food.width > basket.x &&
+            food.x < basket.x + basket.width &&
+            food.y < basket.y + basket.height) {
+            foods.splice(index, 1);
+            score += food.type.points;
+            document.getElementById('score').textContent = score;
+
+            // Level up every 100 points
+            if (score >= level * 100) {
+                level++;
+                document.getElementById('level').textContent = level;
+            }
+        }
+
+        // Check if food is missed
+        if (food.y > canvas.height) {
+            foods.splice(index, 1);
+            lives--;
+            document.getElementById('lives').textContent = lives;
+
+            if (lives <= 0) {
+                gameOver();
+            }
+        }
+    });
+
+    // Add new food items
+    if (Math.random() < 0.02 + level * 0.005) {
+        foods.push(createFood());
+    }
+}
+
+// Draw game
+function draw() {
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw game elements
+    drawBasket();
+    drawFoods();
+}
+
+// Game loop
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+// Handle keyboard input
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        basket.moving.left = true;
+    }
+    if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        basket.moving.right = true;
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        basket.moving.left = false;
+    }
+    if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        basket.moving.right = false;
+    }
+});
+
+// Game over function
+function gameOver() {
+    document.getElementById('game-over').style.display = 'block';
+    document.getElementById('final-score').textContent = score;
+    cancelAnimationFrame(gameLoop);
+}
+
+// Restart game
+function restartGame() {
+    score = 0;
+    lives = 3;
+    level = 1;
+    foods = [];
+    basket.x = canvas.width / 2 - 40;
+    
+    document.getElementById('score').textContent = score;
+    document.getElementById('lives').textContent = lives;
+    document.getElementById('level').textContent = level;
+    document.getElementById('game-over').style.display = 'none';
+    
+    gameLoop();
+}
+
+// Event listeners
+document.getElementById('restart-btn').addEventListener('click', restartGame);
+
+// Start the game
+gameLoop();
+</script>
+
+<%- include('../partials/footer') %> 

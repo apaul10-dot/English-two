@@ -1,404 +1,122 @@
 <%- include('partials/header') %>
+<link rel="stylesheet" href="/css/games.css">
 
-<div class="container">
-    <div class="hero-section">
-        <div class="welcome-message">
-            Welcome to Hunger Stoppers
-        </div>
-        <div class="game-bar">
-            <div class="game-container">
-                <h2>Test Your Knowledge About Food Insecurity</h2>
-                <div id="game-content">
-                    <div id="question-container">
-                        <p id="question-text">Loading questions...</p>
-                    </div>
-                    <div id="options-container"></div>
-                    <div id="score-container">
-                        <p>Score: <span id="score">0</span>/<span id="total">0</span></p>
-                    </div>
-                    <button id="next-question" style="display: none;">Next Question</button>
+<!-- Navigation Menu -->
+<nav class="nav-menu">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">Food Waste Tracker</a>
+        <div class="nav-links">
+            <a href="/food-insecurity" class="nav-link">Food Insecurity</a>
+            <a href="/games" class="nav-link">Educational Games</a>
+            <a href="/resources" class="nav-link">Resources</a>
+            <a href="/about" class="nav-link">About Us</a>
+            <% if (locals.user) { %>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/auth/logout" class="nav-link">Logout</a>
+            <% } else { %>
+                <div class="auth-buttons">
+                    <a href="/auth/login" class="auth-button login-button">Login</a>
+                    <a href="/auth/register" class="auth-button register-button">Register</a>
                 </div>
+            <% } %>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Track Food Waste & Make a Difference</h1>
+        <p class="hero-description">
+            Join our community in reducing food waste through tracking, education, and fun interactive games.
+            Together, we can create a more sustainable future.
+        </p>
+        <% if (!locals.user) { %>
+            <a href="/auth/register" class="cta-button">Get Started Today</a>
+        <% } else { %>
+            <a href="/dashboard" class="cta-button">View Your Dashboard</a>
+        <% } %>
+    </div>
+</section>
+
+<!-- Games Section -->
+<section class="games-container">
+    <div class="games-grid">
+        <!-- Kids Game -->
+        <div class="game-card">
+            <img src="/images/kids-game.jpg" alt="Kids Game" class="game-image">
+            <div class="game-content">
+                <h3 class="game-title">Food Waste Heroes</h3>
+                <p class="game-description">
+                    Help our hero save food and learn about waste reduction in this fun adventure game!
+                </p>
+                <a href="/games/kids-game" class="play-button">Play Now</a>
+            </div>
+        </div>
+
+        <!-- Word Scramble -->
+        <div class="game-card">
+            <img src="/images/word-scramble.jpg" alt="Word Scramble" class="game-image">
+            <div class="game-content">
+                <h3 class="game-title">Food Word Scramble</h3>
+                <p class="game-description">
+                    Unscramble words related to food waste and sustainability. Test your vocabulary!
+                </p>
+                <a href="/games/word-scramble" class="play-button">Play Now</a>
+            </div>
+        </div>
+
+        <!-- Matching Game -->
+        <div class="game-card">
+            <img src="/images/matching-game.jpg" alt="Matching Game" class="game-image">
+            <div class="game-content">
+                <h3 class="game-title">Food Pairs</h3>
+                <p class="game-description">
+                    Match food items with their storage methods to learn about food preservation.
+                </p>
+                <a href="/games/matching" class="play-button">Play Now</a>
+            </div>
+        </div>
+
+        <!-- Quiz Game -->
+        <div class="game-card">
+            <img src="/images/quiz-game.jpg" alt="Quiz Game" class="game-image">
+            <div class="game-content">
+                <h3 class="game-title">Food Waste Quiz</h3>
+                <p class="game-description">
+                    Test your knowledge about food waste facts and sustainability practices.
+                </p>
+                <a href="/games/quiz" class="play-button">Play Now</a>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Chatbot Button -->
-<button id="chatbotBtn" class="chatbot-button">💬</button>
-<!-- Chatbot Modal -->
-<div id="chatbotModal" class="chatbot-modal">
-    <div class="chatbot-header">
-        Ask about Food Insecurity <span id="closeChatbot" class="close-button">✖️</span>
-    </div>
-    <div id="chatbotMessages" class="chatbot-messages"></div>
-    <form id="chatbotForm" class="chatbot-form">
-        <input id="chatbotInput" type="text" placeholder="Ask a question..." autocomplete="off">
-        <button type="submit">➤</button>
-    </form>
-</div>
+<!-- Dashboard Preview Section (for logged-in users) -->
+<% if (locals.user) { %>
+    <section class="dashboard-preview">
+        <div class="container">
+            <h2>Your Food Waste Overview</h2>
+            <% if (typeof user.getWasteStats === 'function') { %>
+                <% const stats = user.getWasteStats() %>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>Total Waste</h3>
+                        <p class="stat-value"><%= stats.totalWaste.toFixed(1) %> kg</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Average Waste</h3>
+                        <p class="stat-value"><%= stats.averageWaste.toFixed(1) %> kg</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Active Goals</h3>
+                        <p class="stat-value"><%= user.goals.filter(g => g.status === 'Active').length %></p>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </section>
+<% } %>
 
-<style>
-    body {
-        font-family: 'Montserrat', Arial, sans-serif;
-        margin: 0;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #e0f7fa 0%, #e3f2fd 100%);
-    }
-    .container {
-        max-width: 1200px;
-        margin: 80px auto 20px;
-        padding: 20px;
-    }
-    .hero-section {
-        display: flex;
-        gap: 2rem;
-        align-items: flex-start;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .welcome-message {
-        background: white;
-        padding: 2.5rem 3.5rem;
-        border-radius: 16px;
-        box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
-        font-size: 2.2rem;
-        color: #1a73e8;
-        font-weight: 700;
-        max-width: 500px;
-        flex: 1;
-        min-width: 300px;
-    }
-    .game-bar {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 4px 24px rgba(26, 115, 232, 0.10);
-        max-width: 600px;
-        flex: 1;
-        min-width: 300px;
-    }
-    .game-container {
-        color: #1a73e8;
-    }
-    .game-container h2 {
-        margin-top: 0;
-        margin-bottom: 1.5rem;
-        font-size: 1.5rem;
-    }
-    #question-container {
-        margin-bottom: 1.5rem;
-    }
-    #question-text {
-        font-size: 1.2rem;
-        font-weight: 500;
-    }
-    #options-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-    .option-btn {
-        background: #e3f2fd;
-        border: 2px solid #1a73e8;
-        border-radius: 8px;
-        padding: 0.8rem 1.2rem;
-        color: #1a73e8;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .option-btn:hover {
-        background: #1a73e8;
-        color: white;
-    }
-    .option-btn.correct {
-        background: #4caf50;
-        border-color: #4caf50;
-        color: white;
-    }
-    .option-btn.incorrect {
-        background: #f44336;
-        border-color: #f44336;
-        color: white;
-    }
-    #score-container {
-        margin-top: 1.5rem;
-        font-size: 1.1rem;
-        font-weight: 500;
-    }
-    #next-question {
-        margin-top: 1rem;
-        background: #1a73e8;
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    #next-question:hover {
-        background: #1565c0;
-    }
-    /* Chatbot Styles */
-    .chatbot-button {
-        position: fixed;
-        bottom: 32px;
-        right: 32px;
-        background: #2196f3;
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        font-size: 2rem;
-        cursor: pointer;
-        z-index: 1001;
-    }
-    .chatbot-modal {
-        display: none;
-        position: fixed;
-        bottom: 110px;
-        right: 32px;
-        width: 340px;
-        max-width: 95vw;
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-        z-index: 1002;
-        flex-direction: column;
-        overflow: hidden;
-    }
-    .chatbot-header {
-        background: #2196f3;
-        color: #fff;
-        padding: 16px 20px;
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
-    .close-button {
-        float: right;
-        cursor: pointer;
-        font-weight: 400;
-    }
-    .chatbot-messages {
-        padding: 16px;
-        height: 220px;
-        overflow-y: auto;
-        font-size: 1rem;
-        background: #f7fbff;
-    }
-    .chatbot-form {
-        display: flex;
-        border-top: 1px solid #e3f4fd;
-    }
-    .chatbot-form input {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        font-size: 1rem;
-        outline: none;
-    }
-    .chatbot-form button {
-        background: #2196f3;
-        color: #fff;
-        border: none;
-        padding: 0 18px;
-        font-size: 1.3rem;
-        cursor: pointer;
-    }
-    @media (max-width: 768px) {
-        .container {
-            padding: 15px;
-            margin-top: 70px;
-        }
-        .hero-section {
-            flex-direction: column;
-            align-items: center;
-        }
-        .welcome-message {
-            padding: 1.5rem;
-            font-size: 1.8rem;
-            text-align: center;
-        }
-        .game-bar {
-            width: 100%;
-            padding: 1.5rem;
-        }
-        .chatbot-modal {
-            right: 16px;
-            bottom: 90px;
-            width: calc(100% - 32px);
-        }
-    }
-</style>
-
-<script>
-const chatbotAnswers = [
-    {q:/\bwhat( is|'s)? food insecurity\b|define food insecurity/i, a:"Food insecurity is the state of being without reliable access to a sufficient quantity of affordable, nutritious food."},
-    {q:/\bcauses? of food insecurity|why.*food insecurity|food insecurity.*causes?/i, a:"Common causes include poverty, unemployment, food deserts, high food prices, and natural disasters."},
-    {q:/\bsolutions?|reduce|fix|help|combat|address.*food insecurity/i, a:"Solutions include supporting food banks, reducing food waste, improving food distribution, and advocating for policy change."},
-    {q:/\bhow many.*people.*food insecurity|statistics|stats|prevalence/i, a:"Globally, hundreds of millions experience food insecurity. In the US, about 1 in 8 households are affected (USDA, 2022)."},
-    {q:/\bsigns?|symptoms?|effects?|impact.*food insecurity/i, a:"Effects include hunger, malnutrition, poor health, anxiety, and difficulty concentrating, especially in children."},
-    {q:/\bwhat can I do|how can I help|how to help|how to get involved/i, a:"You can help by donating to food banks, volunteering, reducing food waste, and raising awareness."},
-    {q:/\bfood waste|wasting food/i, a:"Food waste is a major contributor to food insecurity. Reducing waste helps make more food available to those in need."},
-    {q:/\bmalnutrition|nutrition/i, a:"Malnutrition is a result of not getting enough nutrients from food, often due to food insecurity."},
-    {q:/\bchildren.*food insecurity|kids.*food insecurity/i, a:"Children facing food insecurity may struggle in school, have health issues, and experience developmental delays."},
-    {q:/\bglobal.*food insecurity|worldwide.*food insecurity/i, a:"Food insecurity affects people worldwide, especially in regions facing conflict, climate change, or economic instability."},
-    {q:/\bhow to donate|where to donate|donation/i, a:"You can donate to local food banks, pantries, or organizations like Feeding America and World Food Programme."},
-    {q:/\bincreasing|trend|is food insecurity rising/i, a:"Food insecurity has increased in recent years due to the pandemic, inflation, and global conflicts."},
-    {q:/\bdifference between hunger and food insecurity|hunger vs food insecurity/i, a:"Hunger is the physical sensation of not having enough to eat. Food insecurity is the lack of reliable access to enough food."},
-    {q:/\bgovernment.*help|policy|government action/i, a:"Governments can help by funding food assistance programs, supporting farmers, and enacting policies to reduce poverty."},
-    {q:/\bcan food insecurity be solved|is there a solution/i, a:"With coordinated efforts in policy, community action, and reducing waste, food insecurity can be greatly reduced."},
-    {q:/\bexamples? of food insecurity|what does food insecurity look like/i, a:"Examples include skipping meals, eating less than needed, or worrying about running out of food."},
-    {q:/\bimpact of food waste|why is food waste bad/i, a:"Food waste contributes to food insecurity, environmental harm, and economic loss. Reducing waste helps everyone."},
-    {q:/\bhow to reduce food waste|tips to reduce food waste/i, a:"Plan meals, store food properly, use leftovers, and donate surplus food to reduce waste."},
-    {q:/\bis food insecurity only about poverty|other causes/i, a:"While poverty is a major factor, food insecurity can also result from disasters, supply chain issues, and food deserts."},
-    {q:/\bresources|where to get help|assistance/i, a:"You can find help at local food banks, community centers, and government assistance programs like SNAP."},
-    {q:/\bfood deserts?/i, a:"A food desert is an area with limited access to affordable and nutritious food, often contributing to food insecurity."},
-    {q:/\bwho is most at risk|vulnerable groups/i, a:"Children, elderly, low-income families, and people in rural or conflict-affected areas are most at risk."},
-    {q:/\bhow does climate change affect food insecurity/i, a:"Climate change can cause crop failures, food shortages, and price increases, worsening food insecurity."},
-    {q:/\bcan technology help/i, a:"Yes! Technology can improve food distribution, reduce waste, and connect people to resources."},
-    {q:/\bwhat is SNAP|food stamps/i, a:"SNAP (Supplemental Nutrition Assistance Program) is a US government program that helps low-income people buy food."},
-    {q:/\bhow to volunteer|volunteering/i, a:"You can volunteer at local food banks, soup kitchens, or community gardens to help fight food insecurity."}
-];
-
-function getChatbotAnswer(q) {
-    for (const pair of chatbotAnswers) {
-        if (pair.q.test(q)) return pair.a;
-    }
-    // Fallback: try to be helpful
-    if (/hello|hi|hey/i.test(q)) return "Hello! How can I help you with questions about food insecurity?";
-    if (/thank/i.test(q)) return "You're welcome! Let me know if you have more questions.";
-    return "I'm here to help with questions about food insecurity, food waste, and ways to help. Try asking about causes, solutions, or resources!";
-}
-
-// UI logic (same as before)
-const btn = document.getElementById('chatbotBtn');
-const modal = document.getElementById('chatbotModal');
-const closeBtn = document.getElementById('closeChatbot');
-const messages = document.getElementById('chatbotMessages');
-const form = document.getElementById('chatbotForm');
-const input = document.getElementById('chatbotInput');
-btn.onclick = () => { modal.style.display = 'flex'; setTimeout(()=>{input.focus()}, 200); };
-closeBtn.onclick = () => { modal.style.display = 'none'; };
-form.onsubmit = e => {
-    e.preventDefault();
-    const userMsg = input.value.trim();
-    if (!userMsg) return;
-    messages.innerHTML += `<div style='margin-bottom:8px;text-align:right;'><span style='background:#e3f4fd;color:#1976d2;padding:7px 13px;border-radius:14px 14px 2px 14px;display:inline-block;'>${userMsg}</span></div>`;
-    const botMsg = getChatbotAnswer(userMsg);
-    messages.innerHTML += `<div style='margin-bottom:8px;text-align:left;'><span style='background:#2196f3;color:#fff;padding:7px 13px;border-radius:14px 14px 14px 2px;display:inline-block;'>${botMsg}</span></div>`;
-    messages.scrollTop = messages.scrollHeight;
-    input.value = '';
-};
-
-// Game Logic
-const questions = [
-    {
-        question: "What percentage of the world's population experiences food insecurity?",
-        options: ["5%", "10%", "25%", "30%"],
-        correct: 2
-    },
-    {
-        question: "Which of these is NOT a common cause of food insecurity?",
-        options: ["Poverty", "Food waste", "Excess food production", "Natural disasters"],
-        correct: 2
-    },
-    {
-        question: "How many people die from hunger-related causes each year?",
-        options: ["1 million", "5 million", "9 million", "15 million"],
-        correct: 2
-    },
-    {
-        question: "What is a 'food desert'?",
-        options: [
-            "A place with no food",
-            "An area with limited access to affordable, nutritious food",
-            "A desert where food grows",
-            "A place where food is free"
-        ],
-        correct: 1
-    },
-    {
-        question: "Which age group is most vulnerable to food insecurity?",
-        options: ["Adults", "Teenagers", "Children", "Elderly"],
-        correct: 2
-    }
-];
-
-let currentQuestion = 0;
-let score = 0;
-
-function startGame() {
-    showQuestion();
-}
-
-function showQuestion() {
-    const question = questions[currentQuestion];
-    document.getElementById('question-text').textContent = question.question;
-    document.getElementById('score').textContent = score;
-    document.getElementById('total').textContent = questions.length;
-
-    const optionsContainer = document.getElementById('options-container');
-    optionsContainer.innerHTML = '';
-
-    question.options.forEach((option, index) => {
-        const button = document.createElement('button');
-        button.className = 'option-btn';
-        button.textContent = option;
-        button.onclick = () => checkAnswer(index);
-        optionsContainer.appendChild(button);
-    });
-
-    document.getElementById('next-question').style.display = 'none';
-}
-
-function checkAnswer(selectedIndex) {
-    const question = questions[currentQuestion];
-    const buttons = document.getElementsByClassName('option-btn');
-    
-    for (let button of buttons) {
-        button.disabled = true;
-    }
-
-    if (selectedIndex === question.correct) {
-        buttons[selectedIndex].classList.add('correct');
-        score++;
-    } else {
-        buttons[selectedIndex].classList.add('incorrect');
-        buttons[question.correct].classList.add('correct');
-    }
-
-    document.getElementById('score').textContent = score;
-    document.getElementById('next-question').style.display = 'block';
-}
-
-document.getElementById('next-question').onclick = () => {
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
-        showQuestion();
-    } else {
-        endGame();
-    }
-};
-
-function endGame() {
-    const gameContent = document.getElementById('game-content');
-    gameContent.innerHTML = `
-        <h3>Game Over!</h3>
-        <p>Your final score: ${score}/${questions.length}</p>
-        <button onclick="resetGame()" style="background: #1a73e8; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer;">Play Again</button>
-    `;
-}
-
-function resetGame() {
-    currentQuestion = 0;
-    score = 0;
-    startGame();
-}
-
-// Start the game when the page loads
-window.onload = startGame;
-</script>
+<%- include('partials/footer') %>
+ 
